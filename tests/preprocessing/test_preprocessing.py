@@ -1,4 +1,4 @@
-from preprocessing.base import TextCleaner
+from preprocessing.cleaner import TextCleaner
 def test_clean_reviews_basic():
     texts = [
         "Este es un texto!!! con URL http://test.com",

@@ -153,39 +153,6 @@ def get_topk_frequent(input_list):
 
 
 
-#CREA EMBEDINGS
-def mean_pool(last_hidden_state, attention_mask):
-    mask = attention_mask.unsqueeze(-1).expand(last_hidden_state.size()).float()
-    summed = (last_hidden_state * mask).sum(1)
-    counts = mask.sum(1).clamp(min=1e-9)
-    return summed / counts
-
-def embed_texts(texts: List[str], batch_size: int = 32, ntok: int = 512, use_prefix: bool = False) -> np.ndarray:
-    outs = []
-    for i in range(0, len(texts), batch_size):
-
-        batch_texts = texts[i:i+batch_size]
-
-        if use_prefix:
-            batch_texts = ["passage: " + t for t in batch_texts]
-
-        enc = tokenizer(
-            batch_texts,
-            padding=True,
-            truncation=True,
-            max_length=ntok,
-            return_tensors="pt"
-        ).to(device)
-
-        with torch.no_grad():
-            out = model(**enc)
-
-        emb = mean_pool(out.last_hidden_state, enc["attention_mask"])
-        emb = torch.nn.functional.normalize(emb, p=2, dim=1)
-
-        outs.append(emb.cpu().numpy())
-
-    return np.vstack(outs)
 
 #DETERMINA EL NUMERO ADECUADO DE CLUSTERS ======================================================================
 def estimate_optimal_neighbors(
