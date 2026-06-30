@@ -151,7 +151,85 @@ def get_topk_frequent(input_list):
             deduped.append(lemma)
     return deduped
 
+def clean_reviews(reviews, min_words=3):
+    """
+    Limpia una lista de reviews y elimina aquellas con menos de `min_words` palabras.
 
+    Parámetros:
+    -----------
+    reviews : list[str]
+        Lista de textos originales.
+    min_words : int
+        Número mínimo de palabras requeridas para conservar la review.
+
+    Retorna:
+    --------
+    cleaned_reviews : list[str]
+        Lista de textos limpios y filtrados.
+    """
+
+    cleaned_reviews = []
+    i = 0
+    indexes = []
+    for text in reviews:
+        if not isinstance(text, str):
+            continue
+
+        # 1️⃣ Normalización Unicode (mantiene acentos pero limpia rarezas)
+        text = unicodedata.normalize("NFKC", text)
+
+        # 2️⃣ Minúsculas
+        text = text.lower()
+
+        # 3️⃣ Eliminar URLs
+        text = re.sub(r"http\S+|www\S+", "", text)
+
+        # 4️⃣ Eliminar caracteres especiales (mantener letras y espacios)
+        text = re.sub(r"[^a-záéíóúüñ\s]", " ", text)
+
+        # 5️⃣ Eliminar espacios múltiples
+        text = re.sub(r"\s+", " ", text).strip()
+
+        # 6️⃣ Filtrar por número mínimo de palabras
+        if len(text.split()) >= min_words:
+            cleaned_reviews.append(text)
+            indexes.append(i)
+        i = i+1
+
+    return indexes, cleaned_reviews
+
+#CHUNKSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+def recortaTodo(texto, max_palabras=512):
+  ntext = []
+  for d in texto:
+    ntext.append(recortar_head_tail_con_separador(d, max_palabras))
+  return ntext
+
+def recortar_head_tail_con_separador(texto, max_palabras=512, separador=" [...] "):
+    """
+    Recorta un texto a un número máximo de palabras usando estrategia head and tail
+    e incluye un separador para indicar dónde se realizó el recorte.
+
+    Args:
+        texto (str): Texto limpio
+        max_palabras (int): Número máximo de palabras deseado
+        separador (str): Texto que indica el punto de recorte
+
+    Returns:
+        str: Texto recortado con separador
+    """
+    palabras = texto.split()
+
+    if len(palabras) <= max_palabras:
+        return texto
+
+    mitad = max_palabras // 2
+    palabras_inicio = palabras[:mitad]
+    palabras_fin = palabras[-mitad:]
+
+    texto_recortado = ' '.join(palabras_inicio) + separador + ' '.join(palabras_fin)
+
+    return texto_recortado
 
 #CREA EMBEDINGS
 def mean_pool(last_hidden_state, attention_mask):

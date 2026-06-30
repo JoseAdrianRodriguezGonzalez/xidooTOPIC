@@ -1,3 +1,49 @@
 [build-system]
 requires= ["hatchling"]
 build-backend="hatchling.build"
+[project]
+name="xidootopic"
+dynamic=["version"]
+description="Graph-based topic modeling using embeddings, Leiden clustering and semantic merging"
+readme="README.md"
+#requires-python="3.10"
+license="MIT"
+authors=[
+  {name="Angel Diaz Pacheco"}
+]
+keywords=["nlp","topic-modeling","embeddings","graph","leiden","clustering"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+  "numpy>=1.23",
+  "scipy>=1.9",
+  "scikit-learn>=1.2",
+  "torch",
+  "transformers",
+  "sentence-transformers",
+  "umap-learn",
+  "faiss-cpu",
+  "python-igraph",
+  "leidenalg"
+]
+[project.optional-dependencies]
+nlp=["spacy", "nltk","keybert"]
+llm=["llama-cpp-python"]
+dev = [
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+  "coverage>=7.0"
+]
+[project.urls]
+Source="https://github.com/JoseAdrianRodriguezGonzalez/xidooTOPIC"
+Issues ="https://github.com/JoseAdrianRodriguezGonzalez/xidooTOPIC/issues"
+[tool.hatch.version]
+path="src/xidootopic/__about__.py"
+
+
