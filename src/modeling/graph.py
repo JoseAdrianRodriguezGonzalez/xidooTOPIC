@@ -111,5 +111,51 @@ def estimate_optimal_neighbors(
         best = candidates[np.argmin(candidates[:, 0])]
 
     return best, results
+import faiss
+import igraph as ig
+from sklearn.preprocessing import normalize
+class KNNGraphBuilder:
+    def __init__(self,k:int=15,metrics:str="cosine",verbose:bool=False):
+        self.k=k
+        self.metrics=metrics
+        self.verbose=verbose
+    def fit(self,X:np.ndarray):
+        self.n_samples_,self.n_features_=X.shape
+        return self 
+    def transform(self,X:np.ndarray):
+        if not hasattr(self,"n_samples_"):
+            raise RuntimeError("Shoud be called  fit() before transform")
+        n,dim=X.shape 
+        #  Normalizar embeddings para coseno correcto
+        if self.metrics=="cosine":
+            X=normalize(X,norm="l2").astype("float32")
 
+        #Índice FAISS para producto punto (equivalente a coseno si normalizado)
+        index = faiss.IndexFlatIP(dim)
+        index.add(X)
+        # Buscar k vecinos (+1 porque el primero es el propio punto)
+        similarities, indices = index.search(X, self.k + 1)
+        #Inicializa el grafo
+        graph = ig.Graph()
+        graph.add_vertices(n)
 
+        edges = set()
+        weights = []
+        #recorre el grafo 
+        for i in range(n):
+            for j, sim in zip(indices[i][1:], similarities[i][1:]):  # excluir self-loop
+                edge = tuple(sorted((i, j)))  # evitar duplicados
+                if edge not in edges:
+                    edges.add(edge)
+                    weights.append(float(sim))
+        
+        graph.add_edges(list(edges))
+        graph.es["weight"] = weights
+        if self.verbose:            
+            print(f"Grafo construido con {graph.vcount()} nodos y {graph.ecount()} aristas.")
+            print(f"Grado promedio ≈ {2*graph.ecount()/graph.vcount():.2f}")
+        self.graph_=graph
+        return graph
+    def fit_transform(self, X: np.ndarray):
+        self.fit(X)
+        return self.transform(X)

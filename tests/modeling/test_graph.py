@@ -79,3 +79,12 @@ def test_small_dataset():
     estimator.fit(X)
 
     assert estimator.best_n_neighbors_ >= 2
+from modeling.graph import KNNGraphBuilder
+def test_graph_builder():
+    X = np.random.rand(20, 5)
+
+    builder = KNNGraphBuilder(k=3)
+    G = builder.fit_transform(X)
+
+    assert G.vcount() == 20
+    assert G.ecount() > 0

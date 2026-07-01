@@ -149,45 +149,6 @@ def get_topk_frequent(input_list):
 
 #CLUSTERING BASADO EN GRAFOS (LEIDEN) =========================================
 
-#CONSTRUYE GRAFO
-def build_similarity_graph(embeddings: np.ndarray, k: int = 15):
-    """
-    Construye un grafo kNN basado en similitud coseno.
-    No usa umbral adaptativo.
-    """
-
-    n, dim = embeddings.shape
-
-    # 🔹 Normalizar embeddings para coseno correcto
-    emb = normalize(embeddings, norm="l2").astype("float32")
-
-    # 🔹 Índice FAISS para producto punto (equivalente a coseno si normalizado)
-    index = faiss.IndexFlatIP(dim)
-    index.add(emb)
-
-    # 🔹 Buscar k vecinos (+1 porque el primero es el propio punto)
-    similarities, indices = index.search(emb, k + 1)
-
-    graph = ig.Graph()
-    graph.add_vertices(n)
-
-    edges = set()
-    weights = []
-
-    for i in range(n):
-        for j, sim in zip(indices[i][1:], similarities[i][1:]):  # excluir self-loop
-            edge = tuple(sorted((i, j)))  # evitar duplicados
-            if edge not in edges:
-                edges.add(edge)
-                weights.append(float(sim))
-
-    graph.add_edges(list(edges))
-    graph.es["weight"] = weights
-
-    print(f"Grafo construido con {graph.vcount()} nodos y {graph.ecount()} aristas.")
-    print(f"Grado promedio ≈ {2*graph.ecount()/graph.vcount():.2f}")
-
-    return graph
 
 #EJECUTA LEIDEN
 def leiden_clustering(graph, resolution: float = 1.0, random_state: int = 42):
