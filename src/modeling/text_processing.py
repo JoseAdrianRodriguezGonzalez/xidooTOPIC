@@ -1,3 +1,13 @@
+def group_by_cluster(texts, clusters):
+    cluster_dict = {}
+
+    for idx, cluster_id in enumerate(clusters):
+        cluster_dict.setdefault(cluster_id, []).append(texts[idx])
+
+    return cluster_dict
+
+#
+
 def get_tokenized_grouped_texts(texts: list[str], labels: np.ndarray) -> dict:
     """
     Groups texts by their cluster labels and tokenizes each text.

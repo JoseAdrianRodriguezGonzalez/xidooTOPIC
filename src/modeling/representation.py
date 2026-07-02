@@ -29,44 +29,57 @@ class KeyWordExtractor:
         self.stopwords=stopwords
         self.top_docs_ratio=top_docs_ratio
         self.top_n=top_n
+    def _get_cluster_data(self,texts,embeddings,labels,cluster_id):
+        cluster_mask = labels == cluster_id
+        return np.array(texts)[cluster_mask],embeddings[cluster_mask]
+    def _select_representative_docs(self,texts,embeddings):
+        centroid = embeddings.mean(axis=0)
+        centroid = centroid / (np.linalg.norm(centroid)+1e-9)
+        sims = cosine_similarity(embeddings, centroid.reshape(1, -1)).flatten()
+        n_top = max(1, int(len(sims) * self.top_docs_ratio))
+        top_indices = sims.argsort()[-n_top:]
+        return texts[top_indices]
+    def _extract_keywords(self,docs):
+        topk = []
+        for l in docs:
+            kws=self.kw_model.extract_keywords(
+                l,
+                keyphrase_ngram_range=(1,1),
+                top_n=self.top_n,
+                vectorizer=CountVectorizer(stop_words=self.stopwords),
+                use_mmr=True,
+                diversity=0.7
+            )
+            topk.extend([k[0] for k in kws])
+        return topk        
+    def _postprocess_keywords(self,keywords):
+        return get_topk_frequent(keywords,self.nlp)
+    def _build_summary(self,keys):
+        if len(keys) > 50:
+            resumenFinal = (", ").join(keys[:50])
+        else:
+            resumenFinal = (",").join(keys)
+        return  "[KEYWORDS] "+resumenFinal
+    
+
     def extract(self,texts:list[str],embeddings:np.ndarray,labels:np.ndarray):
         cluster_keywords = {}
         for cluster_id in np.unique(labels):
-            cluster_mask = labels == cluster_id
-            cluster_texts = np.array(texts)[cluster_mask]
-            cluster_embs = embeddings[cluster_mask]
-
-             # 1️⃣ Centroide
-            centroid = cluster_embs.mean(axis=0)
-            centroid = centroid / (np.linalg.norm(centroid)+1e-9)
-            sims = cosine_similarity(cluster_embs, centroid.reshape(1, -1)).flatten()
-            n_top = max(1, int(len(sims) * self.top_docs_ratio))
-            top_indices = sims.argsort()[-n_top:]
-
-            listadocs =  cluster_texts[top_indices]
-            topk = []
-            resumen = " "
-            for l in listadocs:
-                kws=self.kw_model.extract_keywords(
-                    l,
-                    keyphrase_ngram_range=(1,1),
-                    top_n=self.top_n,
-                    vectorizer=CountVectorizer(stop_words=self.stopwords),
-                    use_mmr=True,
-                    diversity=0.7
-                )
-                topk.extend([k[0] for k in kws])
-            if not topk:
+            cluster_texts,cluster_embs=self._get_cluster_data(
+                texts,embeddings,labels,cluster_id 
+            )
+        
+            top_docs=self._select_representative_docs(
+                cluster_texts,cluster_embs
+            )
+            raw_keywords=self._extract_keywords(top_docs)
+            
+            if not raw_keywords:
                 cluster_keywords[cluster_id] = ([], "[EMPTY]")
                 continue
-            keys = get_topk_frequent(topk,self.nlp)
-            if len(keys) > 50:
-                resumenFinal = (", ").join(keys[:50])
-            else:
-                resumenFinal = (",").join(keys)
-            resumenFinal = "[KEYWORDS] "+resumenFinal
-    
-            resumen = resumenFinal #tok.decode(out[0], skip_special_tokens=True)
+            keys = self._postprocess_keywords(raw_keywords)
+            resumen = self._build_summary(keys)
+            #tok.decode(out[0], skip_special_tokens=True)
             cluster_keywords[cluster_id] = (keys[:10],resumen)
         return cluster_keywords
         
@@ -124,6 +137,15 @@ def get_representative_documents_with_scores(embeddings, labels, documents, top_
         ]
 
     return result
+import math
+from collections import defaultdict
+class RepresentativeDocsExtractor:
+    def __init__(self,top_k=5):
+        self.top_k=top_k
+    def extract(self,embeddings,labels,documents):
+        return get_representative_documents_with_scores(
+            embeddings,labels,documents,self.top_k
+        )
 def compute_cluster_bm25(
     cluster_texts,
     k1=1.5,
@@ -182,4 +204,6 @@ def compute_cluster_bm25(
         cluster_scores[cid] = sorted_terms
 
     return cluster_scores
-
+class BM25KeywordExtractor:
+    def extract(self,cluster_texts):
+        return compute_cluster_bm25(cluster_texts)
