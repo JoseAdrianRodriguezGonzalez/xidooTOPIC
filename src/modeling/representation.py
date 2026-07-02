@@ -99,4 +99,87 @@ class TopicSummarizer:
               )
         return self.tokenizer.decode(out[0],skip_special_tokens=True)
 
-       
+def get_representative_documents_with_scores(embeddings, labels, documents, top_k=5):
+
+    result = {}
+    unique_clusters = np.unique(labels)
+    print(f'\nClusters finales: {len(unique_clusters)}\n')
+    for cluster_id in unique_clusters:
+
+        cluster_indices = np.where(labels == cluster_id)[0]
+        cluster_emb = embeddings[cluster_indices]
+
+        centroid = np.mean(cluster_emb, axis=0).reshape(1, -1)
+        centroid = centroid / np.linalg.norm(centroid)
+
+        sims = cosine_similarity(cluster_emb, centroid).flatten()
+
+        sorted_idx = np.argsort(-sims)
+
+        top_indices = cluster_indices[sorted_idx[:top_k]]
+
+        result[cluster_id] = [
+            (documents[i], sims[sorted_idx[j]])
+            for j, i in enumerate(top_indices)
+        ]
+
+    return result
+def compute_cluster_bm25(
+    cluster_texts,
+    k1=1.5,
+    b=0.75,
+    min_df=1
+):
+    """
+    cluster_texts: dict {cluster_id: [lista de documentos (tokens)]}
+                   cada documento debe ser lista de tokens
+    """
+
+    # Construir documento por cluster
+    cluster_docs = {}
+    for cid, docs in cluster_texts.items():
+        tokens = []
+        for doc in docs:
+            tokens.extend(doc)
+        cluster_docs[cid] = tokens
+
+    N = len(cluster_docs)
+
+    # Longitudes
+    doc_lengths = {cid: len(tokens) for cid, tokens in cluster_docs.items()}
+    avgdl = np.mean(list(doc_lengths.values()))
+
+    # Document frequency por cluster
+    df = defaultdict(int)
+    for cid, tokens in cluster_docs.items():
+        unique_terms = set(tokens)
+        for term in unique_terms:
+            df[term] += 1
+
+    # BM25 scoring
+    cluster_scores = {}
+
+    for cid, tokens in cluster_docs.items():
+        tf = Counter(tokens)
+        scores = {}
+
+        for term, freq in tf.items():
+
+            if df[term] < min_df:
+                continue
+
+            idf = math.log((N - df[term] + 0.5) / (df[term] + 0.5) + 1)
+
+            numerator = freq * (k1 + 1)
+            denominator = freq + k1 * (1 - b + b * (doc_lengths[cid] / avgdl))
+
+            score = idf * (numerator / denominator)
+
+            scores[term] = score
+
+        # ordenar por score
+        sorted_terms = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        cluster_scores[cid] = sorted_terms
+
+    return cluster_scores
+

@@ -123,4 +123,80 @@ def hybrid_threshold_alpha(centroids, cohesion, percentile=95, alpha=0.5):
                 merges.append((lab_i, lab_j, sim, T_dynamic))
 
     return merges
+def composite_cluster_score(
+        embeddings,
+        labels,
+        min_cluster_size=5,
+        alpha=0.5,
+        beta=0.4,
+        gamma=0.1
+    ):
+
+    unique_clusters = np.unique(labels)
+    N = len(labels)
+
+    # ------------------------
+    # 1️⃣ Cohesión intra
+    # ------------------------
+    intra_scores = []
+    weights = []
+
+    for cluster in unique_clusters:
+        idx = np.where(labels == cluster)[0]
+        cluster_emb = embeddings[idx]
+
+        if len(cluster_emb) < 2:
+            continue
+
+        sim_matrix = cosine_similarity(cluster_emb)
+        upper = sim_matrix[np.triu_indices_from(sim_matrix, k=1)]
+        cohesion = upper.mean()
+
+        intra_scores.append(cohesion)
+        weights.append(len(idx) / N)
+
+    C_intra = np.sum(np.array(intra_scores) * np.array(weights))
+
+    # ------------------------
+    # 2️⃣ Separación inter
+    # ------------------------
+    centroids = []
+
+    for cluster in unique_clusters:
+        idx = np.where(labels == cluster)[0]
+        cluster_emb = embeddings[idx]
+        centroid = cluster_emb.mean(axis=0)
+        centroid = centroid / np.linalg.norm(centroid)
+        centroids.append(centroid)
+
+    centroids = np.array(centroids)
+
+    if len(centroids) > 1:
+        centroid_sim = cosine_similarity(centroids)
+        upper = centroid_sim[np.triu_indices_from(centroid_sim, k=1)]
+        S_inter = 1 - upper.mean()
+    else:
+        S_inter = 0
+
+    # ------------------------
+    # 3️⃣ Penalización
+    # ------------------------
+    small_clusters = sum(
+        1 for cluster in unique_clusters
+        if np.sum(labels == cluster) < min_cluster_size
+    )
+
+    P = 1 - (small_clusters / len(unique_clusters))
+
+    # ------------------------
+    # Score final
+    # ------------------------
+    score = alpha * C_intra + beta * S_inter + gamma * P
+
+    return {
+        "C_intra": C_intra,
+        "S_inter": S_inter,
+        "Penalty": P,
+        "Composite Score": score
+    }
 
