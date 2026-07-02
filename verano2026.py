@@ -12,7 +12,6 @@ import numpy as np
 import igraph as ig
 import pandas as pd
 #from llama_cpp import Llama
-from keybert import KeyBERT
 from scipy.linalg import eigh
 from google.colab import files
 from google.colab import drive
@@ -23,17 +22,12 @@ from sklearn.ensemble import IsolationForest
 from collections import Counter, defaultdict
 from typing import Dict, Literal, Optional, List
 from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+
 from sklearn.feature_extraction.text import CountVectorizer
 from transformers import AutoModel, AutoTokenizer, pipeline, AutoModelForSeq2SeqLM
 
-drive.mount('/content/drive')
 #PARA EMBEDINGSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSs
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-device = "cuda" if torch.cuda.is_available() else "cpu"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModel.from_pretrained(MODEL_NAME)
-model.eval()
 
 #SUMARIZER
 # Carga el pipeline con el modelo que elijas
@@ -98,132 +92,6 @@ below are the input information from the topic modeling process:
 """
 """#Funciones"""
 
-def get_topk_frequent(input_list):
-    # Count the frequency of each element
-    counts = Counter(input_list)
-
-    # Get the k most common elements and their counts as a list of tuples
-    # Example output: [(element1, count1), (element2, count2), ...]
-    top_k_with_counts = counts.most_common(len(input_list))
-
-    # Extract only the elements into a list
-    top_k_elements = [item[0] for item in top_k_with_counts]
-    doc = nlp(" ".join(top_k_elements))
-    lematizados = [token.lemma_.lower() for token in doc]
-    seen = set()
-    deduped = []
-    for lemma in lematizados:
-        if lemma not in seen:
-            seen.add(lemma)
-            deduped.append(lemma)
-    return deduped
-
-#CLUSTERING BASADO EN GRAFOS (LEIDEN) =========================================
-
-
-#Agrupa textos en clusters
-def group_by_cluster(texts, clusters):
-    cluster_dict = {}
-
-    for idx, cluster_id in enumerate(clusters):
-        cluster_dict.setdefault(cluster_id, []).append(texts[idx])
-
-    return cluster_dict
-
-
-
-#SEMANTIC MERGIN OF CENTROIDS =============================================================================================
-
-#CHECA COHERENCIA INTRACLUSTER
-
-
-#OBTIENE LAS KEYWORDS DE CADA CENTROIDE
-def extract_cluster_keywordsKF(texts, embeddings, labels, top_docs_ratio=0.2, top_n=10):
-    cluster_keywords = {}
-
-    for cluster_id in np.unique(labels):
-
-        cluster_mask = labels == cluster_id
-        cluster_texts = np.array(texts)[cluster_mask]
-        cluster_embs = embeddings[cluster_mask]
-
-        # 1️⃣ Centroide
-        centroid = cluster_embs.mean(axis=0)
-        centroid = centroid / np.linalg.norm(centroid)
-
-        # 2️⃣ Seleccionar documentos más centrales
-        sims = cosine_similarity(cluster_embs, centroid.reshape(1, -1)).flatten()
-        n_top = max(1, int(len(sims) * top_docs_ratio))
-        top_indices = sims.argsort()[-n_top:]
-
-        listadocs =  cluster_texts[top_indices]
-        topk = []
-        resumen = " "
-        for l in listadocs:
-          keywords = kw_model.extract_keywords(
-            l,
-            keyphrase_ngram_range=(1, 1),
-            top_n=10,
-            vectorizer=CountVectorizer(stop_words=spanish_stopwords),
-            use_mmr=True,
-            diversity=0.7
-          )
-          topk = topk + [tupla[0] for tupla in keywords]
-
-        keys = get_topk_frequent(topk)
-        if len(keys) > 50:
-          resumenFinal = (", ").join(keys[:50])
-        else:
-          resumenFinal = (",").join(keys)
-        resumenFinal = "[KEYWORDS] "+resumenFinal
-        # 3️⃣ Extraer resumen
-        """inputs = tok(resumenFinal, return_tensors="pt", max_length=512, truncation=True).to(device)
-        with torch.inference_mode():
-              out = model_summarization.generate(
-                  **inputs,
-                  num_beams=5,
-                  repetition_penalty=1.5,
-                  no_repeat_ngram_size=3,
-                  early_stopping=True
-              )"""
-        resumen = resumenFinal #tok.decode(out[0], skip_special_tokens=True)
-        cluster_keywords[cluster_id] = (keys[1:10],resumen)
-    return cluster_keywords
-
-
-#Saca kw y las formatea en para el prompt
-def procesar_diccionario_topicos(datos):
-    lista_keywords = []
-    texto_formateado = ""
-
-    for id_topico, (keywords, resumen) in datos.items():
-        # 1. Agregamos las keywords a la lista maestra
-        aux = keywords #obtener_lista_palabras(keywords)
-        lista_keywords.append(aux)
-
-        # 2. Construimos el string formateado para este tópico
-        # Usamos ", ".join() para que las keywords se vean limpias
-        formato_entrada = (
-            f"Topico: {id_topico}\n"
-            f"keywords: {', '.join(aux)}\n"
-            f"Documento:\n"
-            f"{resumen}\n"
-            f"{'-'*30}\n" # Separador visual opcional
-        )
-
-        texto_formateado += formato_entrada
-
-    return lista_keywords, texto_formateado
-
-
-
-
-#HERRAMIENTAS PARA OBTENER LA RESOLUCIÓN DEL GRAFO
-
-#Obtiene la resolución óptima
-
-#Evalua la coherencia intra cluster
-
 #Obtiene los K documentos más representativos
 def get_representative_documents_with_scores(embeddings, labels, documents, top_k=5):
 
@@ -270,7 +138,6 @@ def obtener_keyw(diccionario):
         listas_resultado.append(cadena_palabras)
 
     return listas_resultado
-
 
 #EVALUACIÓN DE LA COHESION INTRA Y SEPARACIÓN DE CLUSTER BASADO EN EMBEDDINGS Y SIM COSENO
 
@@ -459,10 +326,6 @@ def get_tokenized_grouped_texts(texts: list[str], labels: np.ndarray) -> dict:
 
     return tokenized_grouped_texts
 
-
-def obtener_lista_palabras(lista_tuplas):
-    # Extraemos solo el primer elemento (la palabra) de cada tupla en cada lista del diccionario
-   return [palabra for palabra, valor in lista_tuplas]
 
 """#Ejecución sin creación de embeddings"""
 

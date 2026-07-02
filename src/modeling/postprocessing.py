@@ -1,7 +1,7 @@
 from enum import unique
 import numpy as np 
 class ClusterFilter:
-    def __init__(self,min_cluster_size:int=5,reindex:bool=True,verbose:bool=True) :
+    def __init__(self,min_cluster_size:int=5,reindex:bool=False,verbose:bool=True) :
         self.min_cluster_size=min_cluster_size
         self.reindex=reindex
         self.verbose=verbose 
