@@ -29,4 +29,4 @@ class UMAPReducer:
 
     def fit_transform(self, X):
         self.fit(X)
-        return self.transform(X)
+        return self.model_.fit_transform(X)

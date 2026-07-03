@@ -92,5 +92,5 @@ class LeidenResolutionOptimizer:
         return self
     def fit_predict(self, graph, embeddings):
         self.fit(graph, embeddings)
-        return self.best_labels_
+        return self.best_labels_,self.best_resolution_
 
