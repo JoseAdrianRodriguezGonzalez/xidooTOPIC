@@ -10,7 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4 
-
+        with:
+          fetch-depth: 0
       - name: Set up Python 
         uses: actions/setup-python@v5 
         with: 
@@ -26,7 +27,7 @@ jobs:
 
       #TestPyPi 
       - name: Publish to Test PyPi 
-        if: "!contains(github.ref_name, 'rc')"
+        if: "contains(github.ref_name, 'rc')"
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
