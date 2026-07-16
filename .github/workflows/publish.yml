@@ -28,7 +28,7 @@ jobs:
           rm -rf dist build 
           python -m build 
       - name: Inspect Package 
-        runs: |
+        run: |
           ls -lah dist
           unzip -p dist/*.whl '*METADATA' | head -20
       #TestPyPi 
