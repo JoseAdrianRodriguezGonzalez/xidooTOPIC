@@ -44,13 +44,21 @@ jobs:
         run: |
           python -m pip show twine
           python -m pip show requests
+      - name: Debug Twine credentials
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          echo "USERNAME=$TWINE_USERNAME"
+          echo "PASSWORD length=${#TWINE_PASSWORD}"
+          echo "PASSWORD start=${TWINE_PASSWORD:0:10}"
       - name: Publish wheel to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy dist/*.whl 
+          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy --username "$TWINE_USERNAME" --password "$TWINE_PASSWORD" dist/*.whl 
       - name: Publish tar to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
         env:
