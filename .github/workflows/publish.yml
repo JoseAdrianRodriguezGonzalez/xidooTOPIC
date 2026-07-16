@@ -63,8 +63,8 @@ jobs:
               --verbose \
               --non-interactive \
               --repository-url https://test.pypi.org/legacy/ \
-              --username "${#TWINE_USERNAME}" \
-              --password "${TWINE_PASSWORD}" \
+              --username "$TWINE_USERNAME" \
+              --password "$TWINE_PASSWORD" \
               dist/*.whl
       - name: Publish tar to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
