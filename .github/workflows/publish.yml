@@ -41,7 +41,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          twine upload --verbose --repository-url https://test.pypi.org/legacy dist/*
+          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy dist/*
       - name: Publish to PyPi 
         if: "!contains(github.ref_name, 'rc')"
         env:
