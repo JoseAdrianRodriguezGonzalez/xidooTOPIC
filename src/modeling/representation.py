@@ -23,6 +23,23 @@ def get_topk_frequent(input_list,nlp):
             deduped.append(lemma)
     return deduped
 class KeyWordExtractor:
+    @classmethod
+    def default(cls):
+        from keybert import KeyBERT
+        import spacy
+        from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except:
+            raise RuntimeError("Run: python -m spacy download en_core_web_sm")
+        kw_model = KeyBERT()
+        stopwords = list(ENGLISH_STOP_WORDS)
+        
+        return cls(
+            kw_model=kw_model,
+            stopwords=stopwords,
+            nlp=nlp
+        )
     def __init__(self,kw_model,stopwords,nlp,top_docs_ratio:float=0.2,top_n:int=10):
         self.nlp=nlp 
         self.kw_model=kw_model

@@ -1,4 +1,33 @@
-class xidootopic:
+from preprocessing.cleaner import TextCleaner
+from preprocessing.chunks import TextChunker
+from embedding.embedder import TextEmbedder
+from embedding.encoder import HFencoder
+from embedding.pooling import MeanPooling
+from modeling.reduction import UMAPReducer
+from modeling.outliers import IsolationForestOutlierRemover
+from modeling.graph import KNNGraphBuilder
+from modeling.clustering import LeidenResolutionOptimizer,LeidenClusterer
+from modeling.postprocessing import ClusterFilter,ClusterMerger
+from modeling.representation import KeyWordExtractor,RepresentativeDocsExtractor
+
+class XidooTopic:
+    @classmethod
+    def default(cls, verbose=True):
+        return cls(
+            preprocessor=TextCleaner(),
+            chunker=TextChunker(),
+            embedder=TextEmbedder.default(),
+            reducer=UMAPReducer(),
+            outlier_detector=IsolationForestOutlierRemover(),
+            graph_builder=KNNGraphBuilder(),
+            optimal_resolution=LeidenResolutionOptimizer(),
+            clusterer=LeidenClusterer(),
+            cluster_filter=ClusterFilter(),
+            cluster_merger=ClusterMerger(),
+            keyword_model=KeyWordExtractor.default(),
+            doc_model=RepresentativeDocsExtractor(),
+            verbose=verbose
+        )
     def __init__(self,
                  preprocessor,
                  chunker,

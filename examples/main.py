@@ -1,4 +1,4 @@
-from xidootopic.xidootopic import xidootopic
+from xidootopic.xidootopic import XidooTopic
 from preprocessing.cleaner import TextCleaner
 from preprocessing.chunks import TextChunker
 from embedding.embedder import TextEmbedder
@@ -32,7 +32,7 @@ nlp = spacy.load("en_core_web_sm")
 nltk.download('stopwords')
 
 spanish_stopwords = nltk.corpus.stopwords.words('spanish')
-model=xidootopic(preprocessor=TextCleaner(),
+model=XidooTopic(preprocessor=TextCleaner(),
                  chunker=TextChunker(),
                 embedder=TextEmbedder(encoder=HFencoder(model=model_hf,
                                                         tokenizer=tokenizer,

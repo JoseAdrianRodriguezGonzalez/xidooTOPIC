@@ -4,6 +4,26 @@ import torch
 from embedding.encoder import HFencoder
 from embedding.pooling import MeanPooling 
 class TextEmbedder:
+    @classmethod
+    def default(cls, model_name="sentence-transformers/all-MiniLM-L6-v2"):
+
+        from transformers import AutoModel, AutoTokenizer
+        device="cuda" if torch.cuda.is_available() else "cpu"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model_hf = AutoModel.from_pretrained(model_name)
+
+        encoder = HFencoder(model_hf,tokenizer,device)
+        pooling = MeanPooling()
+        model_hf.to(device)
+        model_hf.eval()
+        
+        return cls(
+            encoder=encoder,
+            pooling=pooling,
+            batch_size=32,
+            normalize=True,
+            use_prefix=False
+        )
     def __init__(self,encoder:HFencoder,
                  pooling:MeanPooling,
                  batch_size:int=32,

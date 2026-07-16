@@ -1,5 +1,5 @@
 [build-system]
-requires= ["hatchling"]
+requires= ["hatchling","hatch-vcs"]
 build-backend="hatchling.build"
 [project]
 name="xidootopic"
@@ -44,6 +44,6 @@ dev = [
 Source="https://github.com/JoseAdrianRodriguezGonzalez/xidooTOPIC"
 Issues ="https://github.com/JoseAdrianRodriguezGonzalez/xidooTOPIC/issues"
 [tool.hatch.version]
-path="src/xidootopic/__about__.py"
-
-
+path="vcs"
+[tool.hatch.build.hooks.vcs]
+version-file = "src/xidootopic/__about__.py"
