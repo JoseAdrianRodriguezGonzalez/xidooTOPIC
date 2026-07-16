@@ -59,7 +59,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          python -m twine upload \                         (xidooTOPIC)   3.10.20 conda ◯ xidooTOPIC  02:16 
+            python -m twine upload \                         
               --verbose \
               --non-interactive \
               --repository-url https://test.pypi.org/legacy/ \
