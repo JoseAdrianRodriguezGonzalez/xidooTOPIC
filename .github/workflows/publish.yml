@@ -50,7 +50,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy --username "$TWINE_USERNAME" --password "$TWINE_PASSWORD" dist/*.whl 
+          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy dist/*.whl 
       - name: Publish tar to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
         env:
