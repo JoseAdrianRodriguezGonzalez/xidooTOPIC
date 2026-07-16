@@ -40,13 +40,26 @@ jobs:
           echo "HOME=$HOME"
           ls -la ~
           test -f ~/.pypirc && cat ~/.pypirc || echo "No .pypirc"
-      - name: Publish to Test PyPi 
+      - name: Show versions
+        run: |
+          python -m pip show twine
+          python -m pip show requests
+      - name: Publish wheel to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy --username "$TWINE_USERNAME" --password "$TWINE_PASSWORD" dist/*
+          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy --username "$TWINE_USERNAME" --password "$TWINE_PASSWORD" dist/*.whl 
+      - name: Publish tar to Test PyPi 
+        if: "contains(github.ref_name, 'rc')"
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy --username "$TWINE_USERNAME" --password "$TWINE_PASSWORD" dist/*.tar.gz 
+
+
       - name: Publish to PyPi 
         if: "!contains(github.ref_name, 'rc')"
         env:
