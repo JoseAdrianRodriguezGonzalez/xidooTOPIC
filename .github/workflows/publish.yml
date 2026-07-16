@@ -24,7 +24,7 @@ jobs:
           pip install build "twine>=6.0" 
       - name: Check versions
         run: |
-          python --versions
+          python --version
           twine --version 
       - name: Build package 
         run: | 
