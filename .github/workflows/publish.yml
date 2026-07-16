@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v4 
         with:
           fetch-depth: 0
+          fetch-tags: true
       - name: Set up Python 
         uses: actions/setup-python@v5 
         with: 
@@ -23,8 +24,13 @@ jobs:
           pip install build "twine==5.1.1" 
 
       - name: Build package 
-        run: python -m build 
-
+        run: | 
+          rm -rf dist build 
+          python -m build 
+      - name: Inspect Package 
+        runs: |
+          ls -lah dist
+          unzip -p dist/*.whl '*METADATA' | head -20
       #TestPyPi 
       - name: Publish to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
