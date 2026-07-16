@@ -35,13 +35,18 @@ jobs:
           ls -lah dist
           unzip -p dist/*.whl '*METADATA' | head -20
       #TestPyPi 
+      - name: Debug twine config
+        run: |
+          echo "HOME=$HOME"
+          ls -la ~
+          test -f ~/.pypirc && cat ~/.pypirc || echo "No .pypirc"
       - name: Publish to Test PyPi 
         if: "contains(github.ref_name, 'rc')"
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy dist/*
+          twine upload --verbose --non-interactive --repository-url https://test.pypi.org/legacy --username "$TWINE_USERNAME" --password "$TWINE_PASSWORD"dist/*
       - name: Publish to PyPi 
         if: "!contains(github.ref_name, 'rc')"
         env:
