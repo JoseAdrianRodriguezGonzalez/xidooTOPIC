@@ -44,6 +44,6 @@ dev = [
 Source="https://github.com/JoseAdrianRodriguezGonzalez/xidooTOPIC"
 Issues ="https://github.com/JoseAdrianRodriguezGonzalez/xidooTOPIC/issues"
 [tool.hatch.version]
-path="vcs"
+source="vcs"
 [tool.hatch.build.hooks.vcs]
 version-file = "src/xidootopic/__about__.py"
