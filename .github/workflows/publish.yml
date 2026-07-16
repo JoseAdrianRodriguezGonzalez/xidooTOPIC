@@ -30,7 +30,7 @@ jobs:
         run: | 
           rm -rf dist build 
           python -m build 
-          unzip -l dist/xidootopic-0.1.0rc2-py2.py3-none-any.whl
+          
       - name: Inspect Package 
         run: |
           ls -lah dist
