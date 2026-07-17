@@ -3,5 +3,5 @@
 git add .
 git commit -m "Changing some of the namespace"
 git push
-git tag v0.1.0-rc5
-git push origin v0.1.0-rc5
+git tag v0.1.0-rc6
+git push origin v0.1.0-rc6
