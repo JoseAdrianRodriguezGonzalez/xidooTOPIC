@@ -1,8 +1,8 @@
 import numpy as np 
 import torch
 
-from embedding.encoder import HFencoder
-from embedding.pooling import MeanPooling 
+from .encoder import HFencoder
+from .pooling import MeanPooling 
 class TextEmbedder:
     @classmethod
     def default(cls, model_name="sentence-transformers/all-MiniLM-L6-v2"):

@@ -53,7 +53,7 @@ class ClusterFilter:
 
 
 from sklearn.metrics.pairwise import cosine_similarity
-from modeling.metrics import compute_cluster_cohesion,hybrid_threshold_alpha
+from .metrics import compute_cluster_cohesion,hybrid_threshold_alpha
 class ClusterMerger:
     def __init__(self,percentile:int=95,alpha:float=0.6,max_iter:int=50,verbose:bool=False,reindex:bool=False):
         self.reindex=reindex

@@ -1,7 +1,7 @@
 import random
 import numpy as np 
 import leidenalg 
-from modeling.metrics import compute_intra_coherence,compute_inter_separation
+from .metrics import compute_intra_coherence,compute_inter_separation
 class LeidenClusterer:
     def __init__(self,resolution=1.0,
                  partition_type=leidenalg.RBConfigurationVertexPartition,
