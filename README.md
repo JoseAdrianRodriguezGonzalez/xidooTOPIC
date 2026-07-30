@@ -65,8 +65,7 @@ The method follows a structured six-stage pipeline:
 ### Isolation Forest
 
 > [!NOTE]
-
->Isolation Forest assumes anomalies are easier to isolate than normal points. It builds random partition trees and assigns higher anomaly scores to points that require fewer splits to isolate.
+> Isolation Forest assumes anomalies are easier to isolate than normal points. It builds random partition trees and assigns higher anomaly scores to points that require fewer splits to isolate.
 
 This makes it highly effective for high-dimensional embeddings where distance-based methods degrade.
 
@@ -75,8 +74,7 @@ This makes it highly effective for high-dimensional embeddings where distance-ba
 ### Leiden Clustering
 
 > [!NOTE]
-
->Leiden improves over Louvain by guaranteeing connected communities and better modularity optimization.
+> Leiden improves over Louvain by guaranteeing connected communities and better modularity optimization.
 
 > It operates in three phases:
 
@@ -106,7 +104,7 @@ After initial clustering, clusters are merged based on:
 > [!NOTE]
 > KeyBERT selects keywords based on embedding similarity rather than frequency.
 
-Unlike TF-IDF, KeyBERT captures semantic relevance, allowing rare but meaningful terms to surface as keywords.
+> Unlike TF-IDF, KeyBERT captures semantic relevance, allowing rare but meaningful terms to surface as keywords.
 
 Implementation details:
 
