@@ -64,8 +64,9 @@ The method follows a structured six-stage pipeline:
 
 ### Isolation Forest
 
-[!NOTE]
-Isolation Forest assumes anomalies are easier to isolate than normal points. It builds random partition trees and assigns higher anomaly scores to points that require fewer splits to isolate.
+>[!NOTE]
+
+>Isolation Forest assumes anomalies are easier to isolate than normal points. It builds random partition trees and assigns higher anomaly scores to points that require fewer splits to isolate.
 
 This makes it highly effective for high-dimensional embeddings where distance-based methods degrade.
 
@@ -73,16 +74,17 @@ This makes it highly effective for high-dimensional embeddings where distance-ba
 
 ### Leiden Clustering
 
-[!NOTE]
-Leiden improves over Louvain by guaranteeing connected communities and better modularity optimization.
+>[!NOTE]
 
-It operates in three phases:
+>Leiden improves over Louvain by guaranteeing connected communities and better modularity optimization.
 
-- Local node movement  
-- Partition refinement  
-- Graph aggregation  
+> It operates in three phases:
 
-This results in more stable and coherent topic clusters.
+> - Local node movement  
+> - Partition refinement  
+> - Graph aggregation  
+
+> This results in more stable and coherent topic clusters.
 
 ---
 
@@ -94,15 +96,16 @@ After initial clustering, clusters are merged based on:
 - Cluster cohesion  
 - Adaptive thresholds combining global and local structure  
 
-[!NOTE]
-This step reduces redundancy and improves topic interpretability by merging semantically overlapping clusters.
+> [!NOTE]
+> This step reduces redundancy and improves topic interpretability by merging semantically overlapping clusters.
 
 ---
 
 ### Keyword Extraction (KeyBERT)
 
-[!NOTE]
-KeyBERT selects keywords based on embedding similarity rather than frequency.
+> [!NOTE]
+
+> KeyBERT selects keywords based on embedding similarity rather than frequency.
 
 Unlike TF-IDF, KeyBERT captures semantic relevance, allowing rare but meaningful terms to surface as keywords.
 
