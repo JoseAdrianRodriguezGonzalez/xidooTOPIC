@@ -75,13 +75,10 @@ This makes it highly effective for high-dimensional embeddings where distance-ba
 
 > [!NOTE]
 > Leiden improves over Louvain by guaranteeing connected communities and better modularity optimization.
-
 > It operates in three phases:
-
 > - Local node movement  
 > - Partition refinement  
 > - Graph aggregation  
-
 > This results in more stable and coherent topic clusters.
 
 ---
@@ -200,6 +197,6 @@ MIT License
 
 ## ✨ Status
 
-[!NOTE]
-This project is currently in beta stage, designed for research and experimentation in topic modeling and semantic clustering.
+> [!NOTE]
+> This project is currently in beta stage, designed for research and experimentation in topic modeling and semantic clustering.
 ```
