@@ -121,6 +121,28 @@ Implementation details:
 - KeyBERT-based topic representation  
 
 ---
+## Execution example
+```python
+from xidootopic.xidootopic import XidooTopic
+#Can be any list of strings
+texts = [
+    "Apple announced a new artificial intelligence model in California.",
+    "Me encanta utilizar Python para desarrollar proyectos de inteligencia artificial.",
+    "El presidente de México visitó Guanajuato el pasado lunes.",
+    "The weather today is terrible, and I feel very disappointed.",
+    "Google and Microsoft are investing billions of dollars in AI research.",
+    "La película estuvo bastante buena, aunque el final fue decepcionante.",
+    "OpenAI released a new language model that improves reasoning capabilities.",
+    "Ayer compré un teléfono Samsung en una tienda de Irapuato.",
+    "I don't think this product is worth its expensive price.",
+    "La inteligencia artificial está transformando la educación y la medicina."
+]
+model=XidooTopic.default()
+
+result=model.fit_transform(texts)
+print(result)
+```
+
 
 ## 📁 Project Structure
 
