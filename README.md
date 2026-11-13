@@ -126,16 +126,33 @@ Implementation details:
 from xidootopic.xidootopic import XidooTopic
 #Can be any list of strings
 texts = [
-    "Apple announced a new artificial intelligence model in California.",
-    "Me encanta utilizar Python para desarrollar proyectos de inteligencia artificial.",
-    "El presidente de México visitó Guanajuato el pasado lunes.",
-    "The weather today is terrible, and I feel very disappointed.",
-    "Google and Microsoft are investing billions of dollars in AI research.",
-    "La película estuvo bastante buena, aunque el final fue decepcionante.",
-    "OpenAI released a new language model that improves reasoning capabilities.",
-    "Ayer compré un teléfono Samsung en una tienda de Irapuato.",
-    "I don't think this product is worth its expensive price.",
-    "La inteligencia artificial está transformando la educación y la medicina."
+    "La inteligencia artificial está transformando la industria tecnológica.",
+    "Python es uno de los lenguajes más utilizados para desarrollar aplicaciones de machine learning.",
+    "Las redes neuronales profundas permiten identificar patrones complejos en grandes conjuntos de datos.",
+    "El procesamiento de lenguaje natural facilita la interacción entre humanos y computadoras.",
+    "Los modelos de lenguaje grandes pueden generar textos, responder preguntas y resumir documentos.",
+    "La computación en la nube permite ejecutar aplicaciones sin administrar infraestructura física.",
+    "Los sistemas distribuidos mejoran la escalabilidad y disponibilidad de los servicios.",
+    "El aprendizaje automático se utiliza para detectar fraudes financieros.",
+    "La Universidad Nacional Autónoma de México desarrolla investigaciones científicas.",
+    "El cambio climático representa uno de los mayores desafíos ambientales actuales.",
+    "La medicina moderna utiliza inteligencia artificial para apoyar el diagnóstico de enfermedades.",
+    "Los investigadores estudian nuevas formas de producir energía renovable.",
+    "La educación digital facilita el acceso al conocimiento desde diferentes regiones.",
+    "México cuenta con una gran diversidad cultural, histórica y lingüística.",
+    "La exploración espacial permite estudiar planetas y galaxias distantes.",
+    "Los avances en biotecnología han mejorado diversos procesos agrícolas.",
+    "Estoy muy feliz porque finalmente terminé mi proyecto de investigación.",
+    "Me encanta aprender cosas nuevas y desarrollar soluciones innovadoras.",
+    "Este producto es excelente y superó todas mis expectativas.",
+    "Estoy decepcionado porque el servicio fue lento y poco eficiente.",
+    "La experiencia fue terrible, definitivamente no volvería a comprar aquí.",
+    "No estoy seguro de que esta propuesta sea realmente útil.",
+    "El resultado fue aceptable, aunque todavía existen muchos aspectos por mejorar.",
+    "Me siento frustrado porque el programa sigue presentando errores.",
+    "La Universidad de Guanajuato se encuentra en el estado de Guanajuato, México.",
+    "aunque necesitan muchos recursos computacionales.",
+    "El análisis de datos permite descubrir patrones que no son evidentes."
 ]
 model=XidooTopic.default()
 
